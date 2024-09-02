@@ -121,3 +121,14 @@ ORDER BY title ASC;
 SELECT ABS(MAX(CASE WHEN dept.department = 'marketing' THEN emp.salary ELSE 0 END) - MAX(CASE WHEN dept.department = 'engineering' THEN emp.salary ELSE 0 END)) AS salary_difference
 FROM db_employee emp
 JOIN db_dept dept ON emp.department_id = dept.id;
+
+12. Popularity percentage : Find the popularity percentage for each user on Meta/Facebook. The popularity percentage is defined as the total number of friends the user has divided by the total number of users on the platform, then converted into a percentage by multiplying by 100.
+    Output each user along with their popularity percentage. Order records in ascending order by user id.
+    The 'user1' and 'user2' column are pairs of friends.
+
+NOTE : You need to give alias to every Select statement. Start writing code inside out. Break down the problem into two steps (i) total number of friends user has (ii) total number of users on the platform
+
+SELECT user1, COUNT(_) / (SELECT COUNT(DISTINCT user1) FROM (SELECT user1 FROM facebook_friends UNION SELECT user2 FROM facebook_friends) AS users_union) _ 100 AS popularity_percent
+FROM (SELECT user1, user2 FROM facebook_friends UNION SELECT user2 AS user1, user1 AS user2 FROM facebook_friends) AS users_union
+GROUP BY 1
+ORDER BY 1
