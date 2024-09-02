@@ -67,3 +67,33 @@ ROUND((SUM(value) - LAG(SUM(value)) OVER ())
 FROM sf_transactions
 GROUP BY ym
 ORDER BY ym;
+
+7. New Products : You are given a table of product launches by company by year. Write a query to count the net difference between the number of products companies launched in 2020 with the number of products companies launched in the previous year. Output the name of the companies and a net difference of net products released for 2020 compared to the previous year.
+
+NOTE : When you have to count the values that are in characters, use count and case. And try to write an answer when you cannot hard code like 2019.
+
+SELECT company_name,
+COUNT(CASE WHEN (year = 2020) THEN 1 END) - COUNT(CASE WHEN (year = 2019) THEN 1 END) AS total_launch
+FROM car_launches
+GROUP BY company_name;
+
+8. Premium vs Freemium : Find the total number of downloads for paying and non-paying users by date. Include only records where non-paying customers have more downloads than paying customers. The output should be sorted by earliest date first and contain 3 columns date, non-paying downloads, paying downloads.
+
+SELECT date, SUM(IF(paying_customer = 'no', downloads, 0)) AS non_paying,
+SUM(IF(paying_customer = 'yes', downloads, 0)) AS paying
+FROM ms_download_facts
+JOIN ms_user_dimension AS mud USING (user_id)
+JOIN ms_acc_dimension AS mad USING (acc_id)
+GROUP BY date
+HAVING non_paying > paying
+ORDER BY date ASC;
+
+9. Top percentile fraud : ABC Corp is a mid-sized insurer in the US and in the recent past their fraudulent claims have increased significantly for their personal auto insurance portfolio. They have developed a ML based predictive model to identify propensity of fraudulent claims. Now, they assign highly experienced claim adjusters for top 5 percentile of claims identified by the model.
+   Your objective is to identify the top 5 percentile of claims from each state. Your output should be policy number, state, claim cost, and fraud score.
+
+WITH pctls AS
+(SELECT \*, PERCENT_RANK() OVER (PARTITION BY state ORDER BY fraud_score DESC) AS pctl FROM fraud_score)
+
+SELECT policy_num, state, claim_cost, fraud_score
+FROM pctls
+WHERE pctl <= .05;
