@@ -115,3 +115,9 @@ JOIN linkedin_employees c ON b.emp_id = c.id
 GROUP BY title, budget, end_date, start_date
 HAVING prorated_employee_expense > budget
 ORDER BY title ASC;
+
+11. Salaries difference : Write a query that calculates the difference between the highest salaries found in the marketing and engineering departments. Output just the absolute difference in salaries.
+
+SELECT ABS(MAX(CASE WHEN dept.department = 'marketing' THEN emp.salary ELSE 0 END) - MAX(CASE WHEN dept.department = 'engineering' THEN emp.salary ELSE 0 END)) AS salary_difference
+FROM db_employee emp
+JOIN db_dept dept ON emp.department_id = dept.id;
